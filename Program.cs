@@ -30,8 +30,8 @@ namespace ComparePackageVersions
             PopulateDictionary(dict1, doc1, root1);
             PopulateDictionary(dict2, doc2, root2);
 
-            // Compare the packages and versions from each dictionary and print messages
-            ComparePackages(dict1, dict2, file1, file2);
+            // Compare the packages and versions from each dictionary and output a table
+            OutputTable(dict1, dict2, file1, file2);
         }
 
         // A method to populate a dictionary with the package id and version from an XML document
@@ -53,9 +53,19 @@ namespace ComparePackageVersions
             }
         }
 
-        // A method to compare the packages and versions from two dictionaries and print messages
-        static void ComparePackages(Dictionary<string, string> dict1, Dictionary<string, string> dict2, string file1, string file2)
+        // A method to compare the packages and versions from two dictionaries and output a table
+        static void OutputTable(Dictionary<string, string> dict1, Dictionary<string, string> dict2, string file1, string file2)
         {
+            // Get the names of the folders that contain the files
+            string folder1 = Path.GetFileName(Path.GetDirectoryName(file1));
+            string folder2 = Path.GetFileName(Path.GetDirectoryName(file2));
+
+            // Print the table header with the folder names
+            Console.WriteLine($"| Package name | {folder1} | {folder2} |");
+
+            // Print a separator line for the table header
+            Console.WriteLine("|--------------|----------|----------|");
+
             // Loop through each key-value pair in the first dictionary
             foreach (var pair1 in dict1)
             {
@@ -66,30 +76,18 @@ namespace ComparePackageVersions
                 // Find the matching key-value pair in the second dictionary
                 var pair2 = dict2.FirstOrDefault(p => p.Key == id1);
 
-                // If there is no matching key-value pair, print a message
+                // If there is no matching key-value pair, print a message in the second column
                 if (pair2.Equals(default(KeyValuePair<string, string>)))
                 {
-                    Console.WriteLine($"Package {id1} is missing in {file2}");
+                    Console.WriteLine($"| {id1} | {version1} | missing |");
                 }
                 else
                 {
                     // Get the version of the matching package
                     string version2 = pair2.Value;
 
-                    // Compare the versions and print a message
-                    int result = CompareVersions(version1, version2);
-                    if (result == 0)
-                    {
-                        Console.WriteLine($"Package {id1} has the same version {version1} in both projects");
-                    }
-                    else if (result > 0)
-                    {
-                        Console.WriteLine($"Package {id1} has a newer version {version1} in {file1} than {version2} in {file2}");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Package {id1} has an older version {version1} in {file1} than {version2} in {file2}");
-                    }
+                    // Print both versions in the table row
+                    Console.WriteLine($"| {id1} | {version1} | {version2} |");
                 }
             }
 
@@ -102,10 +100,10 @@ namespace ComparePackageVersions
                 // Find the matching key-value pair in the first dictionary
                 var pair1 = dict1.FirstOrDefault(p => p.Key == id2);
 
-                // If there is no matching key-value pair, print a message
+                // If there is no matching key-value pair, print a message in the first column
                 if (pair1.Equals(default(KeyValuePair<string, string>)))
                 {
-                    Console.WriteLine($"Package {id2} is missing in {file1}");
+                    Console.WriteLine($"| {id2} | missing | {pair2.Value} |");
                 }
             }
         }
@@ -145,4 +143,5 @@ namespace ComparePackageVersions
             }
         }
     }
+
 }
