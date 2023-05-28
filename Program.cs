@@ -32,6 +32,48 @@ namespace ComparePackageVersions
 
             // Compare the packages and versions from each dictionary and output a table
             OutputTable(dict1, dict2, file1, file2);
+
+            // Ask the user if they want to normalize the packages
+            Console.WriteLine("Do you want to normalize the packages? [Y/N]");
+            string answer = Console.ReadLine();
+
+            // If the user answers yes, ask which project to use as a source
+            if (answer.Equals("Y", StringComparison.OrdinalIgnoreCase))
+            {
+                // Get the names of the folders that contain the files
+                string folder1 = Path.GetFileName(Path.GetDirectoryName(file1));
+                string folder2 = Path.GetFileName(Path.GetDirectoryName(file2));
+
+                // Ask the user which project to use as a source
+                Console.WriteLine($"From {folder1} to {folder2}? [Y/N]");
+                answer = Console.ReadLine();
+
+                // If the user answers yes, use the first project as a source and update the second project
+                if (answer.Equals("Y", StringComparison.OrdinalIgnoreCase))
+                {
+                    UpdateProject(dict1, dict2, doc2, root2, file2);
+                }
+                // If the user answers no, use the second project as a source and update the first project
+                else if (answer.Equals("N", StringComparison.OrdinalIgnoreCase))
+                {
+                    UpdateProject(dict2, dict1, doc1, root1, file1);
+                }
+                // If the user answers anything else, print an invalid input message
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter Y or N.");
+                }
+            }
+            // If the user answers no, do nothing
+            else if (answer.Equals("N", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.WriteLine("No changes made.");
+            }
+            // If the user answers anything else, print an invalid input message
+            else
+            {
+                Console.WriteLine("Invalid input. Please enter Y or N.");
+            }
         }
 
         // A method to populate a dictionary with the package id and version from an XML document
@@ -42,7 +84,6 @@ namespace ComparePackageVersions
 
             // Get the package elements from the document depending on the file type
             var packages = root == "Project" ? doc.Descendants(ns + "PackageReference") : doc.Descendants("package");
-
             // Loop through each package element and add it to the dictionary
             foreach (var package in packages)
             {
@@ -76,18 +117,32 @@ namespace ComparePackageVersions
                 // Find the matching key-value pair in the second dictionary
                 var pair2 = dict2.FirstOrDefault(p => p.Key == id1);
 
-                // If there is no matching key-value pair, print a message in the second column
+                // If there is no matching key-value pair, print a message in the second column with red color
                 if (pair2.Equals(default(KeyValuePair<string, string>)))
                 {
+                    Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine($"| {id1} | {version1} | missing |");
+                    Console.ResetColor();
                 }
                 else
                 {
                     // Get the version of the matching package
                     string version2 = pair2.Value;
 
-                    // Print both versions in the table row
-                    Console.WriteLine($"| {id1} | {version1} | {version2} |");
+                    // Compare the versions and print them in the table row with green color if they are equal or red color if they are different
+                    int result = CompareVersions(version1, version2);
+                    if (result == 0)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"| {id1} | {version1} | {version2} |");
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"| {id1} | {version1} | {version2} |");
+                        Console.ResetColor();
+                    }
                 }
             }
 
@@ -100,13 +155,16 @@ namespace ComparePackageVersions
                 // Find the matching key-value pair in the first dictionary
                 var pair1 = dict1.FirstOrDefault(p => p.Key == id2);
 
-                // If there is no matching key-value pair, print a message in the first column
+                // If there is no matching key-value pair, print a message in the first column with red color
                 if (pair1.Equals(default(KeyValuePair<string, string>)))
                 {
+                    Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine($"| {id2} | missing | {pair2.Value} |");
+                    Console.ResetColor();
                 }
             }
         }
+
 
         // A helper method to compare two version strings
         static int CompareVersions(string v1, string v2)
@@ -142,6 +200,62 @@ namespace ComparePackageVersions
                 return 0; // v1 is equal to v2
             }
         }
-    }
 
+        // A method to update a project with the packages and versions from another project
+        static void UpdateProject(Dictionary<string, string> sourceDict, Dictionary<string, string> targetDict, XDocument targetDoc, string targetRoot, string targetFile)
+        {
+            // Get the default namespace from the root element of the target document
+            XNamespace ns = targetDoc.Root.GetDefaultNamespace();
+
+            // Get the package elements from the target document depending on the file type
+            var packages = targetRoot == "Project" ? targetDoc.Descendants(ns + "PackageReference") : targetDoc.Descendants("package");
+
+            // Create a list to store the packages that have been changed
+            var changedPackages = new List<string>();
+
+            // Loop through each package element in the target document
+            foreach (var package in packages)
+            {
+                // Get the id and version of the package depending on the file type and element type
+                string id = targetRoot == "Project" ? package.Attribute("Include").Value : package.Attribute("id").Value;
+                string version = targetRoot == "Project" ? (package.Element(ns + "Version") != null ? package.Element(ns + "Version").Value : package.Attribute("Version").Value) : package.Attribute("version").Value;
+
+                // Find the matching key-value pair in the source dictionary
+                var pair = sourceDict.FirstOrDefault(p => p.Key == id);
+
+                // If there is a matching key-value pair and its version is different from the target version, update it and add it to the list of changed packages
+                if (!pair.Equals(default(KeyValuePair<string, string>)) && pair.Value != version)
+                {
+                    if (targetRoot == "Project")
+                    {
+                        if (package.Element(ns + "Version") != null)
+                        {
+                            package.Element(ns + "Version").Value = pair.Value;
+                        }
+                        else
+                        {
+                            package.Attribute("Version").Value = pair.Value;
+                        }
+                    }
+                    else
+                    {
+                        package.Attribute("version").Value = pair.Value;
+                    }
+                    changedPackages.Add($"{id}: {version} -> {pair.Value}");
+                }
+            }
+
+            // Save the changes to the target document
+            targetDoc.Save(targetFile);
+
+            // Print a message with the number of packages changed
+            Console.WriteLine($"{changedPackages.Count} packages changed in {targetFile}");
+
+            // Print the list of packages changed
+            foreach (var item in changedPackages)
+            {
+                Console.WriteLine(item);
+            }
+        }
+    }
 }
