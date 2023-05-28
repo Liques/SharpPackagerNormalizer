@@ -37,9 +37,40 @@ namespace ComparePackageVersions
             // Compare the packages and versions from each dictionary and output a table
             OutputTable(dict1, dict2, file1, file2);
 
-            // Ask the user if they want to normalize the packages and perform the update if yes
-            NormalizePackages(dict1, dict2, doc1, doc2, root1, root2, file1, file2);
+            // Check if there are any differences among packages versions
+            bool hasDifferences = HasDifferences(dict1, dict2);
+
+            // If there are differences, ask the user if they want to normalize the packages and perform the update if yes
+            if (hasDifferences)
+            {
+                NormalizePackages(dict1, dict2, doc1, doc2, root1, root2, file1, file2);
+            }
         }
+
+        // A helper method to check if there are any differences among packages versions
+        static bool HasDifferences(Dictionary<string, string> dict1, Dictionary<string, string> dict2)
+        {
+            // Loop through each key-value pair in the first dictionary
+            foreach (var pair1 in dict1)
+            {
+                // Get the id and version of the package
+                string id1 = pair1.Key;
+                string version1 = pair1.Value;
+
+                // Find the matching key-value pair in the second dictionary
+                var pair2 = dict2.FirstOrDefault(p => p.Key == id1);
+
+                // If there is a matching key-value pair and its version is different from the first version, return true
+                if (!pair2.Equals(default(KeyValuePair<string, string>)) && pair2.Value != version1)
+                {
+                    return true;
+                }
+            }
+
+            // If no differences are found, return false
+            return false;
+        }
+
 
         // A method to find the csproj or app.config file in a folder
         // A method to find the csproj or app.config file in a folder or a file path
@@ -215,7 +246,7 @@ namespace ComparePackageVersions
             Console.WriteLine($"| Package name	|	{folder1}  	|	{folder2} |");
 
             // Print a separator line for the table header
-            Console.WriteLine("|--------------|----------|----------|");
+            Console.WriteLine("| --------------	----------	----------|");
 
             // Loop through each key-value pair in the first dictionary
             foreach (var pair1 in dict1)
