@@ -1,0 +1,111 @@
+{
+  "version": 3,
+  "targets": {
+    "net7.0": {
+      "System.Xml.Linq/3.5.21022.801": {
+        "type": "package",
+        "compile": {
+          "lib/net20/System.Xml.Linq.dll": {}
+        },
+        "runtime": {
+          "lib/net20/System.Xml.Linq.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "System.Xml.Linq/3.5.21022.801": {
+      "sha512": "U6hdQ1sCnMD/s2zqKl23g4Obdovr1ZUnrF1x+NRpaoZBeZX5PSwcp1dgvgvJaRsYZgwUzrC+tj9klb0mMnHUcQ==",
+      "type": "package",
+      "path": "system.xml.linq/3.5.21022.801",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net20/System.Xml.Linq.dll",
+        "system.xml.linq.3.5.21022.801.nupkg.sha512",
+        "system.xml.linq.nuspec"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net7.0": [
+      "System.Xml.Linq >= 3.5.21022.801"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\Sam\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "C:\\Users\\Sam\\Desktop\\impro\\cafe\\CompareXml\\CompareXml.csproj",
+      "projectName": "CompareXml",
+      "projectPath": "C:\\Users\\Sam\\Desktop\\impro\\cafe\\CompareXml\\CompareXml.csproj",
+      "packagesPath": "C:\\Users\\Sam\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Sam\\Desktop\\impro\\cafe\\CompareXml\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\Sam\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net7.0"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "net7.0": {
+        "targetAlias": "net7.0",
+        "dependencies": {
+          "System.Xml.Linq": {
+            "target": "Package",
+            "version": "[3.5.21022.801, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.200\\RuntimeIdentifierGraph.json"
+      }
+    }
+  },
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'System.Xml.Linq 3.5.21022.801' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net7.0'. This package may not be fully compatible with your project.",
+      "libraryId": "System.Xml.Linq",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    }
+  ]
+}

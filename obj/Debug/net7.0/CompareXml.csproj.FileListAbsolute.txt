@@ -1,0 +1,15 @@
+C:\Users\Sam\Desktop\impro\cafe\CompareXml\bin\Debug\net7.0\CompareXml.exe
+C:\Users\Sam\Desktop\impro\cafe\CompareXml\bin\Debug\net7.0\CompareXml.deps.json
+C:\Users\Sam\Desktop\impro\cafe\CompareXml\bin\Debug\net7.0\CompareXml.runtimeconfig.json
+C:\Users\Sam\Desktop\impro\cafe\CompareXml\bin\Debug\net7.0\CompareXml.dll
+C:\Users\Sam\Desktop\impro\cafe\CompareXml\bin\Debug\net7.0\CompareXml.pdb
+C:\Users\Sam\Desktop\impro\cafe\CompareXml\obj\Debug\net7.0\CompareXml.csproj.AssemblyReference.cache
+C:\Users\Sam\Desktop\impro\cafe\CompareXml\obj\Debug\net7.0\CompareXml.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Sam\Desktop\impro\cafe\CompareXml\obj\Debug\net7.0\CompareXml.AssemblyInfoInputs.cache
+C:\Users\Sam\Desktop\impro\cafe\CompareXml\obj\Debug\net7.0\CompareXml.AssemblyInfo.cs
+C:\Users\Sam\Desktop\impro\cafe\CompareXml\obj\Debug\net7.0\CompareXml.csproj.CoreCompileInputs.cache
+C:\Users\Sam\Desktop\impro\cafe\CompareXml\obj\Debug\net7.0\CompareXml.dll
+C:\Users\Sam\Desktop\impro\cafe\CompareXml\obj\Debug\net7.0\refint\CompareXml.dll
+C:\Users\Sam\Desktop\impro\cafe\CompareXml\obj\Debug\net7.0\CompareXml.pdb
+C:\Users\Sam\Desktop\impro\cafe\CompareXml\obj\Debug\net7.0\CompareXml.genruntimeconfig.cache
+C:\Users\Sam\Desktop\impro\cafe\CompareXml\obj\Debug\net7.0\ref\CompareXml.dll
