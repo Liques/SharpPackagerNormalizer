@@ -10,9 +10,13 @@ namespace ComparePackageVersions
     {
         static void Main(string[] args)
         {
-            // Assume the paths of the two files are passed as arguments
-            string file1 = args[0];
-            string file2 = args[1];
+            // Assume the paths of the two folders are passed as arguments
+            string folder1 = args[0];
+            string folder2 = args[1];
+
+            // Find the csproj or app.config file in each folder
+            string file1 = FindFile(folder1);
+            string file2 = FindFile(folder2);
 
             // Load the XML documents of the files
             XDocument doc1 = XDocument.Load(file1);
@@ -33,6 +37,56 @@ namespace ComparePackageVersions
             // Compare the packages and versions from each dictionary and output a table
             OutputTable(dict1, dict2, file1, file2);
 
+            // Ask the user if they want to normalize the packages and perform the update if yes
+            NormalizePackages(dict1, dict2, doc1, doc2, root1, root2, file1, file2);
+        }
+
+        // A method to find the csproj or app.config file in a folder
+        // A method to find the csproj or app.config file in a folder or a file path
+        static string FindFile(string folder)
+        {
+            // Check if the folder is actually a file path with the extension csproj or config
+            string extension = Path.GetExtension(folder);
+            if (extension == ".csproj" || extension == ".config")
+            {
+                // Return the file path if it matches
+                return folder;
+            }
+
+            // Get all the files in the folder
+            var files = Directory.GetFiles(folder);
+
+            // Loop through each file and check if it has the extension config
+            foreach (var file in files)
+            {
+                extension = Path.GetExtension(file);
+                if (extension == ".config")
+                {
+                    // Return the file path if it matches
+                    return file;
+                }
+            }
+
+            // Loop through each file and check if it has the extension csproj
+            foreach (var file in files)
+            {
+                extension = Path.GetExtension(file);
+                if (extension == ".csproj")
+                {
+                    // Return the file path if it matches
+                    return file;
+                }
+            }
+
+            // If no matching file is found, throw an exception
+            throw new FileNotFoundException($"No csproj or app.config file found in {folder}");
+        }
+
+
+
+        // A method to ask the user if they want to normalize the packages and perform the update if yes
+        static void NormalizePackages(Dictionary<string, string> dict1, Dictionary<string, string> dict2, XDocument doc1, XDocument doc2, string root1, string root2, string file1, string file2)
+        {
             // Ask the user if they want to normalize the packages
             Console.WriteLine("Do you want to normalize the packages? [Y/N]");
             string answer = Console.ReadLine();
@@ -46,17 +100,41 @@ namespace ComparePackageVersions
 
                 // Ask the user which project to use as a source
                 Console.WriteLine($"From {folder1} to {folder2}? [Y/N]");
+                // List all the packages that are going to be changed from folder1 to folder2
+                ListPackagesToBeChanged(dict1, dict2);
                 answer = Console.ReadLine();
 
                 // If the user answers yes, use the first project as a source and update the second project
                 if (answer.Equals("Y", StringComparison.OrdinalIgnoreCase))
                 {
+                    // Update the second project with the first project's packages and versions
                     UpdateProject(dict1, dict2, doc2, root2, file2);
                 }
-                // If the user answers no, use the second project as a source and update the first project
+                // If the user answers no, ask if they want to use the second project as a source and update the first project
                 else if (answer.Equals("N", StringComparison.OrdinalIgnoreCase))
                 {
-                    UpdateProject(dict2, dict1, doc1, root1, file1);
+                    // Ask the user if they want to use the second project as a source
+                    Console.WriteLine($"From {folder2} to {folder1}? [Y/N]");
+                    // List all the packages that are going to be changed from folder2 to folder1
+                    ListPackagesToBeChanged(dict2, dict1);
+                    answer = Console.ReadLine();
+
+                    // If the user answers yes, use the second project as a source and update the first project
+                    if (answer.Equals("Y", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Update the first project with the second project's packages and versions
+                        UpdateProject(dict2, dict1, doc1, root1, file1);
+                    }
+                    // If the user answers no, do nothing
+                    else if (answer.Equals("N", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Console.WriteLine("No changes made.");
+                    }
+                    // If the user answers anything else, print an invalid input message
+                    else
+                    {
+                        Console.WriteLine("Invalid input. Please enter Y or N.");
+                    }
                 }
                 // If the user answers anything else, print an invalid input message
                 else
@@ -75,6 +153,38 @@ namespace ComparePackageVersions
                 Console.WriteLine("Invalid input. Please enter Y or N.");
             }
         }
+
+        // A helper method to list all the packages that are going to be changed
+        static void ListPackagesToBeChanged(Dictionary<string, string> sourceDict, Dictionary<string, string> targetDict)
+        {
+            // Print a message with the number of packages that are going to be changed
+            Console.WriteLine($"{sourceDict.Count} packages are going to be changed.");
+
+            // Loop through each key-value pair in the source dictionary
+            foreach (var pair in sourceDict)
+            {
+                // Get the id and version of the package
+                string id = pair.Key;
+                string version = pair.Value;
+
+                // Find the matching key-value pair in the target dictionary
+                var match = targetDict.FirstOrDefault(p => p.Key == id);
+
+                // If there is a matching key-value pair and its version is different from the source version, print it with colors
+                if (!match.Equals(default(KeyValuePair<string, string>)) && match.Value != version)
+                {
+                    Console.Write(id + ": ");
+                    Console.ForegroundColor = ConsoleColor.Red; // Change text color to red for old version
+                    Console.Write(match.Value + " -> ");
+                    Console.ForegroundColor = ConsoleColor.Green; // Change text color to green for new version
+                    Console.WriteLine(version);
+                    Console.ResetColor(); // Reset text color to default
+                }
+            }
+        }
+
+
+
 
         // A method to populate a dictionary with the package id and version from an XML document
         static void PopulateDictionary(Dictionary<string, string> dict, XDocument doc, string root)
@@ -102,7 +212,7 @@ namespace ComparePackageVersions
             string folder2 = Path.GetFileName(Path.GetDirectoryName(file2));
 
             // Print the table header with the folder names
-            Console.WriteLine($"| Package name | {folder1} | {folder2} |");
+            Console.WriteLine($"| Package name	|	{folder1}  	|	{folder2} |");
 
             // Print a separator line for the table header
             Console.WriteLine("|--------------|----------|----------|");
@@ -121,7 +231,7 @@ namespace ComparePackageVersions
                 if (pair2.Equals(default(KeyValuePair<string, string>)))
                 {
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($"| {id1} | {version1} | missing |");
+                    Console.WriteLine($"| {id1}	|	{version1}	|	missing |");
                     Console.ResetColor();
                 }
                 else
@@ -134,13 +244,13 @@ namespace ComparePackageVersions
                     if (result == 0)
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine($"| {id1} | {version1} | {version2} |");
+                        Console.WriteLine($"| {id1}	|	{version1}	|	{version2} |");
                         Console.ResetColor();
                     }
                     else
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine($"| {id1} | {version1} | {version2} |");
+                        Console.WriteLine($"| {id1}	|	{version1}	|	{version2} |");
                         Console.ResetColor();
                     }
                 }
@@ -159,7 +269,7 @@ namespace ComparePackageVersions
                 if (pair1.Equals(default(KeyValuePair<string, string>)))
                 {
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($"| {id2} | missing | {pair2.Value} |");
+                    Console.WriteLine($"| {id2}	|	missing	|	{pair2.Value} |");
                     Console.ResetColor();
                 }
             }
