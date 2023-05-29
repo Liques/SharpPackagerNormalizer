@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SharpPackagesNormalizer": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\Sam\\source\\repos\\ConsoleApp1\\ConsoleApp1\r\nC:\\Users\\Sam\\source\\repos\\MyProjectTemplate\\\r\nC:\\Users\\Sam\\source\\repos\\MyProjectWizard\\"
+    }
+  }
+}

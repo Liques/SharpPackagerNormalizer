@@ -1,4 +1,6 @@
-﻿# Sharp Packages Normalizer 📦
+﻿Sure, here is the modified readme.md file based on the current web page context and your changes:
+
+# Sharp Packages Normalizer 📦
 
 Have you ever faced the problem of having multiple C# projects and solutions with different packages and versions? 😱
 
@@ -6,31 +8,32 @@ Do you want to quickly and easily normalize your packages across all your projec
 
 If yes, then Sharp Packages Normalizer is the tool for you! 🙌
 
-Sharp Packages Normalizer is a simple console application that can scan two folders containing C# projects or app.config files and compare the packages and versions used in each folder. It can also update one folder with the packages and versions from the other folder, or vice versa. 🚀
+Sharp Packages Normalizer is a simple console application that can scan a folder containing one C# project or app.config file as a source and another folder containing multiple C# projects or app.config files as targets and compare the packages and versions used in each folder. It can also update the target folder with the packages and versions from the source folder. 🚀
 
-This tool was created very very very quickly using smart tools so no coding styles or code standards have been set up. It was created due to a personal issue with a lot of projects and solutions, and it is on GitHub if someone needs it. 🤖
+This tool was created very very very quickly using smart tools to solve an urgent problem, so it does not follow any specific coding styles or code standards. It was designed to be functional and efficient, not elegant or consistent. 🤖
 
 ## How to use it 💻
 
 To use Sharp Packages Normalizer, you need to pass the paths of the two folders as arguments to the console application. For example:
 
 ```bash
-SharpPackagesNormalizer.exe C:\Projects\Folder1 C:\Projects\Folder2
+SharpPackagesNormalizer.exe C:\Projects\SourceFolder C:\Projects\TargetFolder
 ```
 
-The application will then find the csproj or app.config file in each folder and load the XML documents of the files. It will create dictionaries to store the packages and versions from each document and output a table comparing them. For example:
+The application will then find the csproj or app.config file in the source folder and multiple csproj or app.config files in the target folder and load the XML documents of the files. It will create dictionaries to store the packages and versions from each document and output a table comparing them. For example:
 
 ```
- Folder1.csproj            Folder2.csproj
- Microsoft.NET.Test.Sdk    16.9.4                    16.9.4
- MSTest.TestAdapter        2.2.3                     2.2.3
- MSTest.TestFramework      2.2.3                     2.2.3
- coverlet.collector        3.0.3                     -
- NUnit                     -                         3.13.2
- NUnit3TestAdapter         -                         4.0.0
+| Package name | SourceFolder | 2 target projects |
+| -------------- ---------- -------------------|
+| Microsoft.NET.Test.Sdk | 16.9.4 | 16.9.4 (Project1), 16.9.4 (Project2) |
+| MSTest.TestAdapter | 2.2.3 | 2.2.3 (Project1), missing(Project2)  |
+| MSTest.TestFramework | 2.2.3 | 2.2.3 (Project1), missing (Project2)  |
+| coverlet.collector | 3.0.3 | missing (Project1), missing (Project2)  |
+| NUnit | - | missing (Project1), 3.13.2 (Project2) |
+| NUnit3TestAdapter | - | missing (Project1), 4.0.0 (Project2)  |
 ```
 
-The application will then check if there are any differences among packages versions (excluding missing packages) and ask you if you want to normalize the packages. If you answer yes, it will ask you which folder to use as a source and update the other folder with the source folder's packages and versions.
+The application will then check if there are any differences among packages versions (excluding missing packages) and ask you if you want to normalize the packages using the source project as a source and update all the target projects with the source project's packages and versions.
 
 ## Contributing 🙋‍♂️
 
