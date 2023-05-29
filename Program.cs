@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace ComparePackageVersions
 {
+    // TODO: This class need refactoring sppliting it into new helper classes.
     class Program
     {
         static void Main(string[] args)
